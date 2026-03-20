@@ -1,5 +1,5 @@
 [project]
-name = "sistema-ortho"
+name = "sistemaortho"
 version = "0.1.0"
 description = ""
 authors = [
@@ -10,7 +10,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "django (>=6.0.3,<7.0.0)",
-    "uvicorn (>=0.42.0,<0.43.0)"
+    "uvicorn (>=0.42.0,<0.43.0)",
+    "gunicorn (>=25.1.0,<26.0.0)",
+    "psycopg2-binary (>=2.9.11,<3.0.0)",
+    "whitenoise (>=6.12.0,<7.0.0)",
 ]
 
 [dependency-groups]
