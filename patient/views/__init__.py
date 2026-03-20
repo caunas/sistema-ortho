@@ -1,1 +1,1 @@
-from .patient import PatientListView
+from .patient import PatientListView, PatientCreateView

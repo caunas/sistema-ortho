@@ -34,9 +34,8 @@
         <ul>
         {% for patient in patients %}
             <li>
-            <strong>{{ patient.name }}</strong><br>
+            <strong>{{ patient.first_name }} {{ patient.last_name }}</strong><br>
             Telefone: {{ patient.phone }}<br>
-            Email: {{ patient.email }}
             </li>
             <hr>
         {% empty %}
