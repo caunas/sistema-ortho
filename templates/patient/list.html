@@ -29,6 +29,14 @@
             <li>
             <strong>{{ patient.first_name }} {{ patient.last_name }}</strong><br>
             Telefone: {{ patient.phone }}<br>
+
+	    <form action="{% url 'patients:delete' patient.cpf %}" 
+                  method="post" 
+                  style="display: inline;"
+                  onsubmit="return confirm('Tem certeza que deseja excluir {{ patient.first_name }} {{ patient.last_name }}?');">
+                {% csrf_token %}
+                <button type="submit" class="btn-excluir">Excluir paciente</button>
+            </form>
             </li>
             <hr>
         {% empty %}
@@ -36,6 +44,8 @@
         {% endfor %}
         </ul>
         
-        <script src="" async defer></script>
+        <script src="" async defer>
+
+	</script>
     </body>
 </html>

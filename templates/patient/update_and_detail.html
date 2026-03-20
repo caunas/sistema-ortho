@@ -1,0 +1,374 @@
+Here is an HTML template that works with both your `PatientUpdateView` and `PatientDetailView`, using minimal styling with a clean, functional layout.
+```html
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Prontuário</title>
+    <style>
+        /* Minimal, clean styling - functional and readable */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f4f6f9;
+            color: #1e2a3a;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        /* header area */
+        .page-header {
+            padding: 1.8rem 2rem;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #0f2b3d;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.25rem;
+        }
+
+        .sub {
+            color: #4a627a;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        /* messages (toasts / alerts) */
+        .messages {
+            padding: 0 2rem;
+            margin-top: 1rem;
+        }
+
+        .alert {
+            padding: 0.85rem 1.2rem;
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            background: #f8fafc;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #e6f9ed;
+            border-left-color: #2c7a4b;
+            color: #14532d;
+        }
+
+        .alert-error {
+            background: #feeceb;
+            border-left-color: #c72a2a;
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #eef2ff;
+            border-left-color: #2563eb;
+            color: #1e3a8a;
+        }
+
+        /* form and detail sections */
+        .form-panel {
+            padding: 2rem;
+        }
+
+        /* generic field group (works for form fields and detail display) */
+        .field-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label, .field-label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #4b6b8f;
+            margin-bottom: 0.5rem;
+        }
+
+        input, .field-value {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            border-radius: 14px;
+            background: #ffffff;
+            transition: all 0.1s ease;
+        }
+
+        input {
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.2);
+        }
+
+        /* read-only / detail styling */
+        .field-value {
+            background: #f8fafc;
+            border: 1px solid #e2edf2;
+            color: #1e2f3f;
+            word-break: break-word;
+        }
+
+        /* specific for cpf/birthday formatting */
+        .readonly-display {
+            background: #f8fafc;
+        }
+
+        /* action buttons */
+        .action-buttons {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            border-top: 1px solid #eef2f6;
+            padding-top: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.6rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-radius: 40px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.15s;
+            border: none;
+            font-family: inherit;
+            background: #f1f5f9;
+            color: #1f3a4b;
+        }
+
+        .btn-primary {
+            background: #1f6392;
+            color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .btn-primary:hover {
+            background: #0f4b6e;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #eef2ff;
+            color: #1f4a76;
+            border: 1px solid #cbdff2;
+        }
+
+        .btn-secondary:hover {
+            background: #e2eafc;
+        }
+
+        .btn-danger {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #b91c1c;
+        }
+
+        .btn-danger:hover {
+            background: #fff5f5;
+            border-color: #f3c2c2;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: none;
+            border-top: 1px solid #e9eef3;
+        }
+
+        /* small error list styling */
+        .errorlist {
+            list-style: none;
+            margin-top: 0.4rem;
+            font-size: 0.8rem;
+            color: #c2410c;
+            background: #fff7ed;
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+        }
+
+        .errorlist li {
+            margin: 0.1rem 0;
+        }
+
+        /* subtle footer */
+        .footer-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #7c8f9f;
+            padding: 1rem 2rem 1.5rem;
+            border-top: 1px solid #eef2f8;
+            background: white;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .form-panel {
+                padding: 1.5rem;
+            }
+            .page-header {
+                padding: 1.2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- HEADER SECTION: dynamic title based on view context -->
+    <div class="page-header">
+        <h1>{{ title|default:"Prontuário" }}</h1>
+        <div class="sub">
+            {% if is_update %}
+                ✏️ Preencha os campos abaixo para atualizar o cadastro
+            {% else %}
+                🔍 Visualize todas as informações do paciente
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- MESSAGES BLOCK: success / error from Django messages framework -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- MAIN CONTENT: handles both update (form) and detail (read-only) modes -->
+    <div class="form-panel">
+        {% if is_update %}
+            {# ---------- UPDATE MODE: form with fields ---------- #}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="field-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="errorlist">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small style="font-size: 0.7rem; color: #5f7d9c;">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">{{ bnt_action|default:"Salvar Alterações" }}</button>
+                    <a href="{% url 'patients:list' %}" class="btn btn-secondary">Cancelar</a>
+                    {# optional: link to detail view #}
+                    {% if object.cpf %}
+                        <a href="{% url 'patients:detail' cpf=object.cpf %}" class="btn btn-secondary">Ver detalhes</a>
+                    {% endif %}
+                </div>
+            </form>
+        {% else %}
+            {# ---------- DETAIL MODE: read-only patient information ---------- #}
+            {# We use object from DetailView context (patient instance) #}
+            <div class="detail-view">
+                <div class="field-group">
+                    <span class="field-label">Nome completo</span>
+                    <div class="field-value">{{ object.first_name|default:"—" }} {{ object.last_name|default:"" }}</div>
+                </div>
+                
+                <div class="field-group">
+                    <span class="field-label">CPF</span>
+                    <div class="field-value">{{ object.cpf|default:"—" }}</div>
+                </div>
+                
+                <div class="field-group">
+                    <span class="field-label">Data de nascimento</span>
+                    <div class="field-value">
+                        {% if object.birthday %}
+                            {{ object.birthday|date:"d/m/Y" }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="field-group">
+                    <span class="field-label">Telefone</span>
+                    <div class="field-value">{{ object.phone|default:"—" }}</div>
+                </div>
+                
+                <!-- additional metadata (optional) -->
+                <hr>
+                <div class="field-group">
+                    <span class="field-label">ID do registro</span>
+                    <div class="field-value">#{{ object.id|default:"—" }}</div>
+                </div>
+                
+                <div class="action-buttons">
+                    {# Dynamic button: matches 'bnt_action' context = "Editar prontuário" #}
+                    {% if object.cpf %}
+                        <a href="{% url 'patients:update' cpf=object.cpf %}" class="btn btn-primary">{{ bnt_action|default:"Editar prontuário" }}</a>
+                    {% endif %}
+                    <a href="{% url 'patients:list' %}" class="btn btn-secondary">Voltar para lista</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="footer-note">
+        {% if is_update %}
+            Sistema de prontuário • alterações salvas refletem imediatamente
+        {% else %}
+            Visualização segura • informações protegidas
+        {% endif %}
+    </div>
+</div>
+
+<!-- Minimal script for optional client-side feedback (just to complement form UX) -->
+<script>
+    (function() {
+        // Simple auto-focus on first input if update mode
+        {% if is_update %}
+            const firstInput = document.querySelector('input:not([type="hidden"])');
+            if (firstInput) firstInput.focus();
+        {% endif %}
+
+        // For detail mode: if you need to add any interactive, but keep it minimal
+        // Also, if there are server-side error messages after submit, they will be displayed.
+        console.log("Template carregado - modo: {% if is_update %}edicao{% else %}detalhe{% endif %}");
+    })();
+</script>
+</body>
+</html>
+```
