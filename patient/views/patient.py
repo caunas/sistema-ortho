@@ -10,7 +10,8 @@ from patient.models import Patient
 class PatientListView(LoginRequiredMixin, ListView):
     model = Patient
     template_name = "patient/list.html"
- 
+    context_object_name = "patients"
+
 
 class PatientCreateView(LoginRequiredMixin, CreateView):
     model = Patient
