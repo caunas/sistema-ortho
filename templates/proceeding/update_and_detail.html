@@ -1,36 +1,679 @@
-{% if mode == "update" %}
-    <h1>Editar Registro</h1>
-{% else %}
-    <h1>Detalhes do Registro</h1>
-{% endif %}
-
-{% if mode == "update" %}
-    <form method="post">
-        {% csrf_token %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if mode == "update" %}Editar Procedimento{% else %}Detalhes do Procedimento{% endif %} - Sistema Médico</title>
+    
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Custom CSS para a paleta de azul claro */
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdef5 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0;
+        }
         
-        {{ form.as_p }}
+        /* Navbar personalizada */
+        .navbar {
+            background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
         
-        <button type="submit">Salvar alterações</button>
-        <a href="{% url 'proceeding:detail' object.id %}">Cancelar</a>
-    </form>
-{% else %}
-    <div>
-        <p><strong>ID:</strong> {{ object.id }}</p>
-        <p><strong>Médico:</strong> {{ object.id_doctor }}</p>
-        <p><strong>Paciente:</strong> {{ object.id_patient }}</p>
-        <p><strong>Código TUSS:</strong> {{ object.tuss_code }}</p>
-        <p><strong>Tipo:</strong> {{ object.get_proceeding_type_display }}</p>
-        <p><strong>Descrição:</strong> {{ object.description }}</p>
-        <p><strong>Data de criação:</strong> {{ object.date|date:"d/m/Y H:i" }}</p>
-        <p><strong>Criado por:</strong> {{ object.created_by }}</p>
+        .navbar-item, .navbar-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
         
-        <div>
-            <a href="{% url 'proceeding:update' object.id %}">Editar</a>
-            <form method="post" action="{% url 'proceeding:delete' object.id %}" style="display: inline;">
-    		{% csrf_token %}
-    		<button type="submit">Excluir</button>
-	    </form>
-            <a href="{% url 'proceeding:proceedings_list' %}">Voltar</a>
+        .navbar-item:hover, .navbar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+        }
+        
+        .navbar-brand .navbar-item {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        /* Container Principal */
+        .proceeding-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Card Principal */
+        .detail-card, .form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .detail-card:hover, .form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Header */
+        .card-header {
+            background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .card-header i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+        
+        .card-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        /* Body do Card */
+        .card-body {
+            padding: 40px;
+        }
+        
+        /* Grid de informações */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border-left: 4px solid #42a5f5;
+        }
+        
+        .info-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #42a5f5;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1565c0;
+            word-break: break-word;
+        }
+        
+        .info-value small {
+            font-size: 0.85rem;
+            font-weight: normal;
+            color: #6c757d;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-primary {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdef5 100%);
+            color: #1565c0;
+        }
+        
+        /* Botões de Ação */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95rem;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 165, 245, 0.4);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: #fff3e0;
+            color: #f57c00;
+            border: 2px solid #ffe0b2;
+        }
+        
+        .btn-warning:hover {
+            background-color: #ffe0b2;
+            transform: translateY(-2px);
+            color: #e65100;
+        }
+        
+        .btn-danger {
+            background-color: #ffebee;
+            color: #d32f2f;
+            border: 2px solid #ffcdd2;
+        }
+        
+        .btn-danger:hover {
+            background-color: #ffcdd2;
+            transform: translateY(-2px);
+            color: #c62828;
+        }
+        
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            color: #495057;
+        }
+        
+        /* Formulário de Edição */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            color: #1565c0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group label i {
+            color: #42a5f5;
+        }
+        
+        .required-field::after {
+            content: "*";
+            color: #f44336;
+            margin-left: 5px;
+        }
+        
+        .input, .textarea, select {
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+            font-family: inherit;
+        }
+        
+        .input:focus, .textarea:focus, select:focus {
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.2);
+            background-color: white;
+            outline: none;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .errorlist {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 5px;
+        }
+        
+        .errorlist li {
+            color: #f44336;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .help-text {
+            color: #9e9e9e;
+            font-size: 0.75rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Mensagens de confirmação */
+        .confirm-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .confirm-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+            animation: slideInDown 0.3s ease;
+        }
+        
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .proceeding-container {
+                padding: 15px;
+            }
+            
+            .card-body {
+                padding: 25px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .card-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #e3f2fd;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #42a5f5;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1e88e5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'dashboard' %}">
+                <i class="fas fa-stethoscope" style="margin-right: 10px;"></i>
+                <strong>Sistema Médico</strong>
+            </a>
+            
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
         </div>
+        
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home" style="margin-right: 8px;"></i>
+                    Dashboard
+                </a>
+                <a class="navbar-item" href="{% url 'patients:list' %}">
+                    <i class="fas fa-users" style="margin-right: 8px;"></i>
+                    Pacientes
+                </a>
+                <a class="navbar-item" href="{% url 'proceeding:proceedings_list' %}">
+                    <i class="fas fa-procedures" style="margin-right: 8px;"></i>
+                    Procedimentos
+                </a>
+                <a class="navbar-item" href="{% url 'proceeding:inquiry_list' %}">
+                    <i class="fas fa-notes-medical" style="margin-right: 8px;"></i>
+                    Consultas
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="proceeding-container">
+        {% if mode == "update" %}
+            <!-- Formulário de Edição -->
+            <div class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-edit"></i>
+                    <h1>Editar Procedimento</h1>
+                    <p>Atualize as informações do procedimento</p>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="updateForm">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}" class="{% if field.field.required %}required-field{% endif %}">
+                                    <i class="fas {% if 'doctor' in field.name %}fa-user-md{% elif 'patient' in field.name %}fa-user{% elif 'tuss' in field.name %}fa-code{% elif 'type' in field.name %}fa-tag{% elif 'description' in field.name %}fa-file-alt{% else %}fa-pencil-alt{% endif %}"></i>
+                                    {{ field.label }}
+                                </label>
+                                <div class="control">
+                                    {% if field.field.widget.input_type == 'textarea' %}
+                                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="textarea {% if field.errors %}is-danger{% endif %}" {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
+                                    {% elif field.field.widget.input_type == 'select' %}
+                                        <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="input {% if field.errors %}is-danger{% endif %}" {% if field.field.required %}required{% endif %}>
+                                            {{ field }}
+                                        </select>
+                                    {% else %}
+                                        <input type="{{ field.field.widget.input_type }}" 
+                                               name="{{ field.name }}" 
+                                               id="{{ field.id_for_label }}" 
+                                               class="input {% if field.errors %}is-danger{% endif %}" 
+                                               value="{{ field.value|default:'' }}"
+                                               {% if field.field.required %}required{% endif %}
+                                               {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}>
+                                    {% endif %}
+                                </div>
+                                {% if field.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in field.errors %}
+                                            <li><i class="fas fa-exclamation-circle"></i> {{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <div class="help-text">
+                                        <i class="fas fa-info-circle"></i>
+                                        <span>{{ field.help_text }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Salvar Alterações
+                            </button>
+                            <a href="{% url 'proceeding:detail' object.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <!-- Visualização de Detalhes -->
+            <div class="detail-card">
+                <div class="card-header">
+                    <i class="fas fa-file-medical"></i>
+                    <h1>Detalhes do Procedimento</h1>
+                    <p>Informações completas do procedimento médico</p>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-hashtag"></i>
+                                ID do Procedimento
+                            </div>
+                            <div class="info-value">
+                                #{{ object.id }}
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-user-md"></i>
+                                Médico Responsável
+                            </div>
+                            <div class="info-value">
+                                {{ object.id_doctor }}
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-user"></i>
+                                Paciente
+                            </div>
+                            <div class="info-value">
+                                {{ object.id_patient }}
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-code"></i>
+                                Código TUSS
+                            </div>
+                            <div class="info-value">
+                                <span class="badge badge-primary">
+                                    <i class="fas fa-barcode"></i>
+                                    {{ object.tuss_code }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-tag"></i>
+                                Tipo de Procedimento
+                            </div>
+                            <div class="info-value">
+                                <span class="badge badge-primary">
+                                    <i class="fas fa-layer-group"></i>
+                                    {{ object.get_proceeding_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                Data de Criação
+                            </div>
+                            <div class="info-value">
+                                <i class="far fa-calendar-check"></i>
+                                {{ object.date|date:"d/m/Y H:i" }}
+                                <small>(horário do sistema)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-user-check"></i>
+                                Criado por
+                            </div>
+                            <div class="info-value">
+                                <i class="fas fa-user-circle"></i>
+                                {{ object.created_by }}
+                            </div>
+                        </div>
+                        
+                        {% if object.description %}
+                        <div class="info-item" style="grid-column: span 2;">
+                            <div class="info-label">
+                                <i class="fas fa-file-alt"></i>
+                                Descrição do Procedimento
+                            </div>
+                            <div class="info-value">
+                                {{ object.description|linebreaks }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'proceeding:update' object.id %}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i>
+                            Editar Procedimento
+                        </a>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                            <i class="fas fa-trash-alt"></i>
+                            Excluir Procedimento
+                        </button>
+                        <a href="{% url 'proceeding:proceedings_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar para Lista
+                        </a>
+                    </div>
+                    
+                    <!-- Formulário de exclusão oculto -->
+                    <form id="deleteForm" method="post" action="{% url 'proceeding:delete' object.id %}" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        {% endif %}
     </div>
-{% endif %}
+    
+    <script>
+        // Script para o menu hamburger
+        document.addEventListener('DOMContentLoaded', () => {
+            const burgerIcon = document.querySelector('.navbar-burger');
+            const navbarMenu = document.querySelector('#navbarBasicExample');
+            
+            if (burgerIcon && navbarMenu) {
+                burgerIcon.addEventListener('click', () => {
+                    burgerIcon.classList.toggle('is-active');
+                    navbarMenu.classList.toggle('is-active');
+                });
+            }
+        });
+        
+        // Função de confirmação para exclusão
+        function confirmDelete() {
+            if (confirm('⚠️ Tem certeza que deseja excluir este procedimento?\n\nEsta ação não pode ser desfeita e todos os dados relacionados serão removidos permanentemente.')) {
+                document.getElementById('deleteForm').submit();
+            }
+        }
+        
+        // Adicionar efeito de confirmação para formulário de edição
+        {% if mode == "update" %}
+        const updateForm = document.getElementById('updateForm');
+        if (updateForm) {
+            updateForm.addEventListener('submit', function(e) {
+                const confirmMessage = 'Deseja salvar as alterações neste procedimento?';
+                if (!confirm(confirmMessage)) {
+                    e.preventDefault();
+                }
+            });
+        }
+        {% endif %}
+        
+        // Tooltip para informações
+        const infoItems = document.querySelectorAll('.info-item');
+        infoItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
