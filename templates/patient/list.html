@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/patient/list.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %} 
 {% block content %}
 <div class="patients-container">
@@ -120,7 +121,7 @@
             action="{% url 'patients:delete' patient.cpf %}"
             method="post"
             style="display: inline"
-            onsubmit="return confirm('Tem certeza que deseja excluir {{ patient.first_name }} {{ patient.last_name }}? Esta ação não pode ser desfeita.');"
+            class="js-delete-form"
           >
             {% csrf_token %}
             <button type="submit" class="btn-delete">
@@ -150,6 +151,7 @@
 {% endblock %} 
 {% block extra_js%}
 <script>
+  // campo de busca
   const searchInput = document.getElementById("searchInput");
   const patientCards = document.querySelectorAll(".patient-card");
 
@@ -172,5 +174,41 @@
       });
     });
   }
+
+  // Delegação de evento para o documento
+  document.addEventListener('submit', function (e) {
+    // Verifica se o formulário tem a classe CORRETA (com hífen)
+    if (e.target && e.target.classList.contains('js-delete-form')) {
+      
+      // Se já confirmamos, deixa o formulário seguir seu caminho
+      if (e.target.dataset.confirmed === "true") {
+        return;
+      }
+
+      e.preventDefault(); // Para o envio inicial
+      const form = e.target;
+
+      Swal.fire({
+        title: 'Confirma a exclusão?',
+        text: "Essa ação é permanente!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar',
+        // Opcional: animação de entrada do SweetAlert2
+        showClass: {
+          popup: 'animate__animated animate__fadeInDown'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Marca o formulário como confirmado e envia
+          form.dataset.confirmed = "true";
+          form.submit();
+        }
+      });
+    }
+  });
 </script>
 {% endblock %}

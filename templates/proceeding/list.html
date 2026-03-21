@@ -5,6 +5,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/proceeding/list.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}
 
 {% block content %}
@@ -114,8 +115,10 @@
                                             <i class="fas fa-edit"></i>
                                             <span class="hide-mobile">Editar</span>
                                         </a>
-                                        <form method="post" action="{% url 'proceeding:delete' record.id %}" style="display: inline;" 
-                                              onsubmit="return confirm('⚠️ Tem certeza que deseja excluir este procedimento?\n\nID: #{{ record.id }}\nTUSS: {{ record.tuss_code }}\n\nEsta ação não pode ser desfeita.');">
+                                        <form method="post" 
+                                        action="{% url 'proceeding:delete' record.id %}" 
+                                        style="display: inline;"
+                                        class="js-delete-form">
                                             {% csrf_token %}
                                             <button type="submit" class="btn-delete" title="Excluir">
                                                 <i class="fas fa-trash-alt"></i>
@@ -211,6 +214,42 @@
                     cell.setAttribute('title', text);
                 }
             });
-        });
+
+            // Delegação de evento para o documento
+            document.addEventListener('submit', function (e) {
+                // Verifica se o formulário tem a classe CORRETA (com hífen)
+                if (e.target && e.target.classList.contains('js-delete-form')) {
+                
+                // Se já confirmamos, deixa o formulário seguir seu caminho
+                if (e.target.dataset.confirmed === "true") {
+                    return;
+                }
+
+                e.preventDefault(); // Para o envio inicial
+                const form = e.target;
+
+                Swal.fire({
+                    title: 'Confirma a exclusão?',
+                    text: "Essa ação é permanente!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sim, excluir',
+                    cancelButtonText: 'Cancelar',
+                    // Opcional: animação de entrada do SweetAlert2
+                    showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                    // Marca o formulário como confirmado e envia
+                    form.dataset.confirmed = "true";
+                    form.submit();
+                    }
+                });
+                }
+            });
+                    });
     </script>
 {% endblock %}
