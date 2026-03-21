@@ -89,6 +89,7 @@ class ProceedingUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["mode"] = "update"
+        return context
 
 
 class ProceedingDetailView(LoginRequiredMixin, DetailView):
