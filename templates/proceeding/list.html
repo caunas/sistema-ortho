@@ -1,0 +1,62 @@
+<h1>{{ title }}</h1>
+
+{% if records %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Médico</th>
+                <th>Paciente</th>
+                <th>Código TUSS</th>
+                <th>Descrição</th>
+                <th>Criado por</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.id }}</td>
+                <td>{{ record.id_doctor }}</td>
+                <td>{{ record.id_patient }}</td>
+                <td>{{ record.tuss_code }}</td>
+                <td>{{ record.description|truncatechars:50 }}</td>
+                <td>{{ record.created_by }}</td>
+                <td>
+                    <a href="{% url 'proceeding:detail' record.id %}">Ver</a>
+                    <a href="{% url 'proceeding:update' record.id %}">Editar</a>
+                    <form method="post" action="{% url 'proceeding:delete' record.id %}" style="display: inline;">
+    			{% csrf_token %}
+    			<button type="submit">Excluir</button>
+	   	    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+        <div>
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; primeira</a>
+                <a href="?page={{ page_obj.previous_page_number }}">anterior</a>
+            {% endif %}
+
+            <span>
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">próxima</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">última &raquo;</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% else %}
+    <p>Nenhum registro encontrado.</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'proceeding:create' %}">Novo registro</a>
+</p>

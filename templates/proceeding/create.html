@@ -1,0 +1,10 @@
+<h1>Novo Registro</h1>
+
+<form method="post">
+    {% csrf_token %}
+    
+    {{ form.as_p }}
+    
+    <button type="submit">Salvar</button>
+    <a href="{% url 'proceeding:proceedings_list' %}">Cancelar</a>
+</form>

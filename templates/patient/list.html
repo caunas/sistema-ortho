@@ -36,7 +36,10 @@
                   onsubmit="return confirm('Tem certeza que deseja excluir {{ patient.first_name }} {{ patient.last_name }}?');">
                 {% csrf_token %}
                 <button type="submit" class="btn-excluir">Excluir paciente</button>
-            </form>
+	    </form>
+	    <form action="{% url 'patients:update' cpf=patient.cpf %}">
+            <button type="submit">Editar dados do paciente</button>
+	    </form>
             </li>
             <hr>
         {% empty %}

@@ -1,0 +1,36 @@
+{% if mode == "update" %}
+    <h1>Editar Registro</h1>
+{% else %}
+    <h1>Detalhes do Registro</h1>
+{% endif %}
+
+{% if mode == "update" %}
+    <form method="post">
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit">Salvar alterações</button>
+        <a href="{% url 'proceeding:detail' object.id %}">Cancelar</a>
+    </form>
+{% else %}
+    <div>
+        <p><strong>ID:</strong> {{ object.id }}</p>
+        <p><strong>Médico:</strong> {{ object.id_doctor }}</p>
+        <p><strong>Paciente:</strong> {{ object.id_patient }}</p>
+        <p><strong>Código TUSS:</strong> {{ object.tuss_code }}</p>
+        <p><strong>Tipo:</strong> {{ object.get_proceeding_type_display }}</p>
+        <p><strong>Descrição:</strong> {{ object.description }}</p>
+        <p><strong>Data de criação:</strong> {{ object.date|date:"d/m/Y H:i" }}</p>
+        <p><strong>Criado por:</strong> {{ object.created_by }}</p>
+        
+        <div>
+            <a href="{% url 'proceeding:update' object.id %}">Editar</a>
+            <form method="post" action="{% url 'proceeding:delete' object.id %}" style="display: inline;">
+    		{% csrf_token %}
+    		<button type="submit">Excluir</button>
+	    </form>
+            <a href="{% url 'proceeding:proceedings_list' %}">Voltar</a>
+        </div>
+    </div>
+{% endif %}
