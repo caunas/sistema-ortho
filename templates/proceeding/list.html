@@ -70,7 +70,6 @@
                                 <th>Paciente</th>
                                 <th>Código TUSS</th>
                                 <th>Descrição</th>
-                                <th>Criado por</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -100,10 +99,6 @@
                                 <td data-label="Descrição" class="description-cell" title="{{ record.description }}">
                                     <i class="fas fa-file-alt" style="color: #42a5f5; margin-right: 5px;"></i>
                                     {{ record.description|truncatechars:50 }}
-                                </td>
-                                <td data-label="Criado por">
-                                    <i class="fas fa-user-check" style="color: #42a5f5; margin-right: 5px;"></i>
-                                    {{ record.created_by }}
                                 </td>
                                 <td data-label="Ações">
                                     <div class="action-buttons">
