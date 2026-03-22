@@ -21,10 +21,16 @@
                     <p>Gerencie todos os procedimentos médicos realizados</p>
                 </div>
             </div>
+            <div class="header-actions">
+            <a href="{% url 'dashboard' %}" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Voltar
+            </a>
             <a href="{% url 'proceeding:create' %}" class="btn-create">
                 <i class="fas fa-plus"></i>
                 Novo Procedimento
             </a>
+        </div>
         </div>
         
         <!-- Stats Section -->
