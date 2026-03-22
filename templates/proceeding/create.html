@@ -28,31 +28,7 @@
                                 {{ field.label }}
                             </label>
                             <div class="control">
-                                {% if field.field.widget.input_type == 'textarea' %}
-                                    <textarea name="{{ field.name }}" 
-                                              id="{{ field.id_for_label }}" 
-                                              class="textarea {% if field.errors %}is-danger{% endif %}" 
-                                              {% if field.field.required %}required{% endif %}
-                                              placeholder="Descreva os detalhes do procedimento...">{{ field.value|default:'' }}</textarea>
-                                {% elif field.field.widget.input_type == 'select' %}
-                                    <select name="{{ field.name }}" 
-                                            id="{{ field.id_for_label }}" 
-                                            class="input {% if field.errors %}is-danger{% endif %}" 
-                                            {% if field.field.required %}required{% endif %}>
-                                        {% if field.field.empty_label %}
-                                            <option value="">{{ field.field.empty_label }}</option>
-                                        {% endif %}
-                                        {{ field }}
-                                    </select>
-                                {% else %}
-                                    <input type="{{ field.field.widget.input_type }}" 
-                                           name="{{ field.name }}" 
-                                           id="{{ field.id_for_label }}" 
-                                           class="input {% if field.errors %}is-danger{% endif %}" 
-                                           value="{{ field.value|default:'' }}"
-                                           {% if field.field.required %}required{% endif %}
-                                           {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}>
-                                {% endif %}
+				    {{ field }}
                             </div>
                             {% if field.errors %}
                                 <ul class="errorlist">

@@ -14,8 +14,7 @@
             <div class="form-card">
                 <div class="card-header">
                     <i class="fas fa-edit"></i>
-                    <h1>Editar Procedimento</h1>
-                    <p>Atualize as informações do procedimento</p>
+                    <h1>Editar Registro</h1>
                 </div>
                 <div class="card-body">
                     <form method="post" id="updateForm">
@@ -27,22 +26,8 @@
                                     <i class="fas {% if 'doctor' in field.name %}fa-user-md{% elif 'patient' in field.name %}fa-user{% elif 'tuss' in field.name %}fa-code{% elif 'type' in field.name %}fa-tag{% elif 'description' in field.name %}fa-file-alt{% else %}fa-pencil-alt{% endif %}"></i>
                                     {{ field.label }}
                                 </label>
-                                <div class="control">
-                                    {% if field.field.widget.input_type == 'textarea' %}
-                                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="textarea {% if field.errors %}is-danger{% endif %}" {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
-                                    {% elif field.field.widget.input_type == 'select' %}
-                                        <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="input {% if field.errors %}is-danger{% endif %}" {% if field.field.required %}required{% endif %}>
-                                            {{ field }}
-                                        </select>
-                                    {% else %}
-                                        <input type="{{ field.field.widget.input_type }}" 
-                                               name="{{ field.name }}" 
-                                               id="{{ field.id_for_label }}" 
-                                               class="input {% if field.errors %}is-danger{% endif %}" 
-                                               value="{{ field.value|default:'' }}"
-                                               {% if field.field.required %}required{% endif %}
-                                               {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}>
-                                    {% endif %}
+                                <div class="control {% if field.errors %}has-errors{% endif %}">
+                                    {{ field }}
                                 </div>
                                 {% if field.errors %}
                                     <ul class="errorlist">
