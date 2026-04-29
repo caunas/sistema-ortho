@@ -102,15 +102,6 @@ O projeto foi estruturado para deploy em VPS Linux utilizando:
 
 ---
 
-# 🔐 Segurança
-
-- Variáveis sensíveis via .env
-- HTTPS com Certbot
-- Proxy reverso via NGINX
-- Configuração separada para desenvolvimento e produção
-
----
-
 # 📌 Status do Projeto
 
 Atualmente o projeto encontra-se como MVP funcional e serve como:
