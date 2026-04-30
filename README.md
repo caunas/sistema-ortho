@@ -8,9 +8,9 @@ Sistema web fullstack para gerenciamento clínico odontológico/ortodôntico, de
 
 # ✨ Funcionalidades
 
-- [x] Autenticação de usuários
 - [x] Dashboard autenticado
-- [x] Listagem de pacientes
+- [x] Listagem e gerenciamento de pacientes
+- [x] Listagem e gerenciamento de consultas e procedimentos 
 - [x] Estrutura modular baseada em apps Django
 - [x] Configuração preparada para ambiente de produção
 
