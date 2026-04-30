@@ -28,12 +28,6 @@ Sistema web fullstack para gerenciamento clínico odontológico/ortodôntico, de
 - Django Templates
 - HTML/CSS/JS
 
-## Infraestrutura
-- Docker
-- Docker Compose
-- NGINX
-- Certbot (HTTPS)
-
 ---
 
 # 🚀 Deploy Rápido
